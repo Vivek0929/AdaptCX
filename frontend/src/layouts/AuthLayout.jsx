@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { Layers, Check, ShieldCheck } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
+import { Logo } from '../components/common/Logo';
 
 export const AuthLayout = () => {
   return (
@@ -8,13 +9,8 @@ export const AuthLayout = () => {
       {/* Left Column: Clean Enterprise Product Info */}
       <div className="hidden lg:flex lg:w-1/2 bg-white border-r border-slate-200 p-12 flex-col justify-between">
         <div>
-          <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-white text-sm shadow-xs">
-              <Layers className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-lg tracking-tight text-slate-900">
-              AdaptCX
-            </span>
+          <Link to="/" className="inline-flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+            <Logo variant="ac" type="horizontal" size="md" showTagline={true} />
           </Link>
 
           <div className="mt-20 space-y-6 max-w-lg">

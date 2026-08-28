@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Input, TextArea } from '../components/common/Input';
 import { Select } from '../components/common/Select';
 import { Button } from '../components/common/Button';
+import { Logo } from '../components/common/Logo';
 import { AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 export const SignupPage = () => {
@@ -78,9 +79,14 @@ export const SignupPage = () => {
           <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
             Step {step} of 2 • {step === 1 ? 'Account Setup' : 'Business Context & Voice'}
           </span>
-          <div className="flex gap-1">
-            <span className={`w-5 h-1 rounded-full ${step >= 1 ? 'bg-indigo-600' : 'bg-slate-800'}`} />
-            <span className={`w-5 h-1 rounded-full ${step === 2 ? 'bg-indigo-600' : 'bg-slate-800'}`} />
+          <div className="flex items-center gap-2">
+            <div className="lg:hidden">
+              <Logo variant="ac" type="mark" size="xs" />
+            </div>
+            <div className="flex gap-1">
+              <span className={`w-5 h-1 rounded-full ${step >= 1 ? 'bg-indigo-600' : 'bg-slate-800'}`} />
+              <span className={`w-5 h-1 rounded-full ${step === 2 ? 'bg-indigo-600' : 'bg-slate-800'}`} />
+            </div>
           </div>
         </div>
         <h2 className="text-xl font-bold text-white tracking-tight">

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Badge, LoadingSpinner } from '../components/common/Badge';
+import { Logo } from '../components/common/Logo';
 
 export const PublicSiteDemoPage = () => {
   const { businessId } = useParams();
@@ -351,8 +352,11 @@ export const PublicSiteDemoPage = () => {
       )}
 
       {/* Footer */}
-      <footer className="py-6 px-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500">
-        <p>Powered by AdaptCX AI Website Personalization</p>
+      <footer className="py-6 px-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+        <span>Powered by</span>
+        <Link to="/" className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+          <Logo variant="ac" type="horizontal" size="xs" showTagline={false} />
+        </Link>
       </footer>
     </div>
   );

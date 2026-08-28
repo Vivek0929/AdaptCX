@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '../../utils/cn';
 
 export const Button = ({
   children,
@@ -15,10 +16,13 @@ export const Button = ({
   const variants = {
     primary: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs focus:ring-indigo-500 border border-indigo-600 active:scale-[0.99]',
     secondary: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-xs focus:ring-slate-400 active:scale-[0.99]',
+    dark: 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-xs focus:ring-slate-500 active:scale-[0.99]',
     outline: 'bg-transparent hover:bg-slate-100 text-slate-700 border border-slate-300 focus:ring-slate-400',
+    outlineDark: 'bg-transparent hover:bg-slate-800 text-white border border-slate-700 focus:ring-slate-500',
     danger: 'bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 focus:ring-red-500',
     success: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 focus:ring-emerald-500',
-    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900'
+    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900',
+    ghostDark: 'bg-transparent hover:bg-slate-800 text-slate-300 hover:text-white'
   };
 
   const sizes = {
@@ -30,7 +34,7 @@ export const Button = ({
   return (
     <button
       disabled={disabled || isLoading}
-      className={`${baseStyles} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`}
+      className={cn(baseStyles, variants[variant] || variants.primary, sizes[size] || sizes.md, className)}
       {...props}
     >
       {isLoading ? (

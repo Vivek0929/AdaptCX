@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '../../utils/cn';
 
 export const Badge = ({
   children,
@@ -23,7 +24,7 @@ export const Badge = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border ${variants[variant] || variants.indigo} ${sizes[size] || sizes.md} ${className}`}
+      className={cn('inline-flex items-center gap-1.5 rounded-md border', variants[variant] || variants.indigo, sizes[size] || sizes.md, className)}
     >
       {children}
     </span>

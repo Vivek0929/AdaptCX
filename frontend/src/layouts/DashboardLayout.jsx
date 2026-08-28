@@ -17,6 +17,7 @@ import {
   Layers
 } from 'lucide-react';
 import { Badge } from '../components/common/Badge';
+import { Logo } from '../components/common/Logo';
 
 export const DashboardLayout = () => {
   const { business, logout } = useAuth();
@@ -42,13 +43,8 @@ export const DashboardLayout = () => {
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col md:flex-row">
       {/* Mobile Top Nav */}
       <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 z-40">
-        <Link to="/dashboard" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-            A
-          </div>
-          <span className="font-bold text-base text-slate-900">
-            AdaptCX
-          </span>
+        <Link to="/dashboard" className="flex items-center">
+          <Logo variant="ac" type="horizontal" size="sm" />
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -66,19 +62,9 @@ export const DashboardLayout = () => {
       >
         <div>
           {/* Brand Header */}
-          <div className="hidden md:flex items-center gap-2.5 px-2 py-2 mb-6">
-            <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-white text-xs shadow-xs">
-              <Layers className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <span className="font-bold text-sm tracking-tight text-slate-900 block leading-tight">
-                AdaptCX
-              </span>
-              <span className="text-[10px] text-slate-500 font-medium block">
-                Enterprise Personalization
-              </span>
-            </div>
-          </div>
+          <Link to="/dashboard" className="hidden md:flex items-center px-1 py-1 mb-6 hover:opacity-90 transition-opacity">
+            <Logo variant="ac" type="horizontal" size="md" showTagline={true} />
+          </Link>
 
           {/* Business Workspace Box */}
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-6">

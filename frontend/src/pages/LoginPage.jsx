@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
+import { Logo } from '../components/common/Logo';
 import { LogIn, AlertCircle } from 'lucide-react';
 
 export const LoginPage = () => {
@@ -39,9 +40,14 @@ export const LoginPage = () => {
 
   return (
     <div className="bg-slate-900 border border-slate-800 p-7 rounded-xl space-y-5 shadow-lg">
-      <div>
-        <h2 className="text-xl font-bold text-white tracking-tight">Sign In to Workspace</h2>
-        <p className="text-xs text-slate-400 mt-1">Access your AdaptCX business dashboard</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-white tracking-tight">Sign In to Workspace</h2>
+          <p className="text-xs text-slate-400 mt-1">Access your AdaptCX business dashboard</p>
+        </div>
+        <div className="lg:hidden">
+          <Logo variant="ac" type="mark" size="sm" />
+        </div>
       </div>
 
       {error && (

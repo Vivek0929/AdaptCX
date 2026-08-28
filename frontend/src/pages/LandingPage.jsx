@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
+import { Logo } from '../components/common/Logo';
 
 export const LandingPage = () => {
   const [activeDemoTab, setActiveDemoTab] = useState('fintech');
@@ -49,14 +50,9 @@ export const LandingPage = () => {
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-white text-xs shadow-xs">
-              <Layers className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-base tracking-tight text-slate-900">
-              AdaptCX
-            </span>
-          </div>
+          <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
+            <Logo variant="ac" type="horizontal" size="md" showTagline={true} />
+          </Link>
 
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -266,7 +262,7 @@ export const LandingPage = () => {
               </Button>
             </Link>
             <Link to="/login">
-              <Button variant="secondary" size="lg" className="bg-slate-800 hover:bg-slate-700 text-white border-slate-700">
+              <Button variant="dark" size="lg">
                 Sign In
               </Button>
             </Link>
@@ -275,8 +271,16 @@ export const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-slate-200 bg-white text-center text-xs text-slate-500">
-        <p>© 2026 AdaptCX. Built for AI for Customer Experience Hackathon.</p>
+      <footer className="py-10 px-6 border-t border-slate-200 bg-white text-slate-500">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <Logo variant="ac" type="horizontal" size="sm" showTagline={true} />
+          </div>
+          <div className="text-center sm:text-right text-xs space-y-1">
+            <p className="font-semibold text-slate-700">AI-Powered Customer Experience Platform</p>
+            <p className="text-slate-500">© 2026 AdaptCX. Built for AI for Customer Experience Hackathon.</p>
+          </div>
+        </div>
       </footer>
     </div>
   );
