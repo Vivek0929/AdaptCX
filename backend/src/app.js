@@ -47,6 +47,16 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files (such as embed.js)
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Root route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    service: 'AdaptCX Backend API',
+    status: 'online',
+    health: '/api/health',
+    embed_script: '/embed.js'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'AdaptCX Backend API', time: new Date().toISOString() });
