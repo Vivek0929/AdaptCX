@@ -49,7 +49,7 @@ export const LandingPage = () => {
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-indigo-600 selection:text-white">
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="w-full px-6 sm:px-10 lg:px-12 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-90 transition-opacity">
             <Logo variant="ac" type="horizontal" size="md" showTagline={true} />
           </Link>
@@ -271,10 +271,10 @@ export const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-6 border-t border-slate-200 bg-white text-slate-500">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <footer className="py-8 px-6 sm:px-10 lg:px-12 border-t border-slate-200 bg-white text-slate-500">
+        <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <Logo variant="ac" type="horizontal" size="sm" showTagline={true} />
+            <Logo variant="ac" type="horizontal" size="md" showTagline={true} />
           </div>
           <div className="text-center sm:text-right text-xs space-y-1">
             <p className="font-semibold text-slate-700">AI-Powered Customer Experience Platform</p>
