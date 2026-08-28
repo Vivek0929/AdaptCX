@@ -15,10 +15,21 @@ export const WidgetSetupPage = () => {
   const [copiedScript, setCopiedScript] = useState(false);
   const [copiedTag, setCopiedTag] = useState('');
 
-  const backendUrl = import.meta.env.VITE_API_BASE_URL
-    ? new URL(import.meta.env.VITE_API_BASE_URL).origin
-    : 'http://localhost:5000';
+  const getBackendUrl = () => {
+    const raw = import.meta.env.VITE_API_BASE_URL;
+    if (!raw || raw.startsWith('/')) {
+      return typeof window !== 'undefined' && window.location.origin.includes('5173')
+        ? 'http://localhost:5000'
+        : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000');
+    }
+    try {
+      return new URL(raw).origin;
+    } catch {
+      return 'http://localhost:5000';
+    }
+  };
 
+  const backendUrl = getBackendUrl();
   const scriptTag = `<script src="${backendUrl}/embed.js" data-business-id="${business?.id || 'YOUR_BUSINESS_ID'}" async></script>`;
 
   const handleCopyScript = () => {

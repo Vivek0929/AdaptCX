@@ -50,6 +50,29 @@ export const signup = async (req, res) => {
       await db.upsertContentBlock(business.id, key, val);
     }
 
+    // Seed 3 starter personas based on general industry
+    const starterUseCases = [
+      {
+        label: 'Healthcare & Medical Clinics',
+        pain_points: 'Strict HIPAA compliance, physician workflow fatigue, slow patient onboarding',
+        sort_order: 1
+      },
+      {
+        label: 'Fintech & Financial Teams',
+        pain_points: 'Real-time audit compliance, transaction fraud prevention, legacy system integration',
+        sort_order: 2
+      },
+      {
+        label: 'E-Commerce & Retail Brands',
+        pain_points: 'Shopping cart abandonment, multi-channel stock sync, high ad customer acquisition costs',
+        sort_order: 3
+      }
+    ];
+
+    for (const uc of starterUseCases) {
+      await db.createUseCase(business.id, uc);
+    }
+
     const token = generateToken(business.id);
     return res.status(201).json({
       message: 'Account created successfully',
