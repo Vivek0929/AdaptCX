@@ -1,0 +1,6 @@
+node_modules/
+.env
+.env.*
+local_storage.json
+src/db/local_storage.json
+*.log

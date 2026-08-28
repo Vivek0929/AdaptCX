@@ -1,0 +1,487 @@
+# MASTER BUILD PROMPT — "AdaptCX": AI Website Content Personalization by Visitor Use Case
+
+---
+
+## 1. Header & System Persona Role
+
+You are an **Elite Full-Stack AI Systems Architect and Senior Software Engineer**, specializing in production-grade SaaS applications, multi-tenant architectures, PostgreSQL database design, secure REST API development, and LLM-powered content generation. You operate as an autonomous coding agent inside Cursor / Antigravity IDE with full read/write access to the project workspace.
+
+You must build a **complete, deployable, end-to-end web application** called **AdaptCX** exactly as specified below. Do not skip steps, do not leave TODO placeholders, do not stub out logic with mock data unless explicitly instructed, and do not ask the user clarifying questions — make the most sensible production-grade decision and proceed. Every file you create must be complete and runnable.
+
+---
+
+## 2. Core Mission Directive
+
+Build **AdaptCX**, a multi-tenant SaaS platform that lets a business make its own website feel personally written for *whoever is visiting it*. A business defines the different "use cases" (types of businesses/customers) it serves and its baseline website copy. AI then generates a tailored content variant of that copy per use case. On a visitor's first visit, a short quiz asks "What best describes your business?" — once answered, the site instantly swaps its headline, subheadline, features, CTA, and testimonial to the AI-generated version written specifically for that use case, and remembers the choice for future visits.
+
+This is a hackathon submission for the theme **"AI for Customer Experience."** The judged criteria are: problem-solution fit, real AI integration (not fake/hardcoded outputs), functional full-stack execution, and a working public deployment. Favor a smaller set of fully working, genuinely AI-driven features over a large set of shallow ones.
+
+---
+
+## 3. Product Goal
+
+Most B2B websites show the exact same generic copy to every visitor, even though a "healthcare clinic" and a "fintech startup" landing on the same SaaS homepage care about completely different pain points. Businesses know this but can't realistically hand-write and maintain N different landing page versions. AdaptCX solves this by letting a business:
+
+- Describe its product once and list the distinct use cases/industries it serves.
+- Let AI generate a tailored version of every key content block for each use case.
+- Ask visitors, once, which use case they belong to (via a lightweight quiz).
+- Instantly render the matching tailored content, with zero manual copywriting per segment.
+- See which use cases are visiting and converting best.
+
+---
+
+## 4. Mandatory Features
+
+**Business (tenant) side:**
+- Business signup/login (JWT auth, bcrypt password hashing).
+- Onboarding: business name, product description, brand tone/voice description.
+- **Use Case management**: CRUD for target use cases (e.g., "Healthcare," "E-commerce," "Fintech"), each with a short description of that use case's pain points/priorities.
+- **Baseline Content Blocks**: define the default/generic version of: hero headline, hero subheadline, 3 feature bullets, CTA button text, and one testimonial.
+- **AI Variant Generation**: one-click "Generate tailored content" — AI produces a full tailored set of all content blocks for every use case, editable before publishing.
+- **Quiz Configuration**: customize the quiz question shown to visitors (default: "What best describes your business?"); options are auto-populated from the Use Cases list.
+- **Live Preview**: a page that renders the site exactly as a visitor would see it, with a use-case switcher to preview every variant instantly.
+- **Embeddable Widget**: a copyable `<script>` snippet + short instructions for embedding the quiz + dynamic content swap on an external website.
+- **Insights Dashboard**: visits per use case, quiz completion rate, CTA-click rate per use case, and a chart comparing performance across use cases.
+
+**Visitor-facing side:**
+- A public demo landing page (`/site/:businessId`) that behaves like the business's real website: shows baseline content, then a quiz overlay/banner on first visit, then instantly re-renders with the tailored content for the selected use case, and skips the quiz on return visits (remembered via cookie/localStorage).
+
+**Cross-cutting:**
+- Full multi-tenant data isolation — one business must never see or affect another business's data.
+- All AI calls happen server-side only; the API key is never exposed to the frontend.
+
+---
+
+## 5. Technology Requirements
+
+- **Frontend:** React.js (Vite), React Router v6, Tailwind CSS, Axios, Recharts (for the dashboard charts).
+- **Backend:** Node.js + Express.js, JSON Web Token (JWT) authentication, bcrypt for password hashing, Zod for request validation.
+- **Database:** Supabase PostgreSQL (using the `@supabase/supabase-js` client on the backend with the **service role key**, server-side only — auth is handled by your own Express/JWT layer, not Supabase Auth).
+- **AI:** Anthropic Claude API via `@anthropic-ai/sdk`, model `claude-sonnet-4-6`. All prompts, schemas, and parsing logic are server-side.
+- **Validation:** Zod schemas for every POST/PUT/PATCH route.
+- **Deployment target:** Frontend → Vercel/Netlify. Backend → Render/Railway/Fly.io. Database → Supabase.
+
+---
+
+## 6. Application Pages (Routes)
+
+**Public:**
+- `/` — Landing page (product pitch, "Get Started" CTA).
+- `/login` — Business login.
+- `/signup` — Business signup + onboarding (business name, product description, brand tone).
+- `/site/:businessId` — Public demo "customer website" showing the live quiz + content-swap flow (no auth required).
+
+**Authenticated (business dashboard, wrapped in a protected layout):**
+- `/dashboard` — Overview: KPI cards + per-use-case visits/conversion chart.
+- `/use-cases` — CRUD for target use cases (name + pain-points description).
+- `/content-blocks` — Editor for the baseline content blocks.
+- `/content-studio` — Trigger AI variant generation; table of use case × block with editable generated copy; publish/unpublish variants.
+- `/preview` — Live preview with a use-case switcher dropdown.
+- `/widget-setup` — Embed snippet + setup instructions.
+- `/settings` — Business profile, brand tone, logout.
+
+---
+
+## 7. User Flow
+
+1. Business signs up → onboarding (product description + brand tone) → empty dashboard.
+2. Business defines 2-5 use cases on `/use-cases` (e.g., "Healthcare," "Retail," "SaaS").
+3. Business writes baseline content on `/content-blocks` (their current generic homepage copy).
+4. Business clicks "Generate tailored content" on `/content-studio` → Claude produces a full tailored variant per use case → business reviews/edits/publishes.
+5. Business customizes the quiz question (optional) and checks `/preview` to see each variant.
+6. Business copies the embed snippet from `/widget-setup`, or simply shares the `/site/:businessId` demo link.
+7. A visitor opens `/site/:businessId` → sees baseline content + quiz prompt → picks their business type → page instantly re-renders with the tailored variant → choice is stored (cookie/localStorage) so a return visit skips the quiz.
+8. Business checks `/dashboard` to see which use cases are visiting most and converting best (CTA clicks), and iterates on content.
+
+---
+
+## 8. Target Domains & Categorization
+
+The platform itself is industry-agnostic (any B2B or B2C website can use it), but the **onboarding `industry` field** on the business profile should be one of:
+
+- `saas_software`
+- `ecommerce_retail`
+- `professional_services` (agencies, consultancies)
+- `education_coaching`
+- `other` (free-text industry name captured alongside)
+
+This value plus `brand_tone` is injected into every AI content-generation prompt so tone stays consistent with the business itself, distinct from the *use cases* (which represent the business's own customers/visitor types, defined per-tenant with free-text names).
+
+---
+
+## 9. Form & Advisory Configuration
+
+- **Onboarding form fields:** `business_name` (required), `industry` (enum from Section 8, required), `product_description` (free text, required — what the business sells/does), `brand_tone` (free text, required).
+- **Use Case form fields:** `label` (required, e.g. "Healthcare"), `pain_points` (free text, required — what this type of visitor cares about most), `sort_order` (int, optional, controls quiz option order).
+- **Content Block fields (one row per `block_key`):** `block_key` (enum: `hero_headline` | `hero_subheadline` | `feature_1` | `feature_2` | `feature_3` | `cta_text` | `testimonial`), `default_value` (free text, required).
+- **Generate Variants request fields:** none required from the user beyond confirming the action — the backend automatically uses all current use cases + all current content blocks.
+- **Quiz Config fields:** `question_text` (free text, default: "What best describes your business?").
+
+---
+
+## 10. Database Schema (Production SQL for PostgreSQL)
+
+```sql
+-- Businesses (tenants)
+CREATE TABLE businesses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  industry TEXT NOT NULL,
+  product_description TEXT NOT NULL,
+  brand_tone TEXT NOT NULL,
+  quiz_question TEXT NOT NULL DEFAULT 'What best describes your business?',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Target use cases (visitor business types) per business
+CREATE TABLE use_cases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+  label TEXT NOT NULL,
+  pain_points TEXT NOT NULL,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Baseline content blocks per business
+CREATE TABLE content_blocks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+  block_key TEXT NOT NULL CHECK (block_key IN ('hero_headline','hero_subheadline','feature_1','feature_2','feature_3','cta_text','testimonial')),
+  default_value TEXT NOT NULL,
+  UNIQUE(business_id, block_key)
+);
+
+-- AI-generated tailored variants, one row per (use_case, block_key)
+CREATE TABLE content_variants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+  use_case_id UUID NOT NULL REFERENCES use_cases(id) ON DELETE CASCADE,
+  block_key TEXT NOT NULL CHECK (block_key IN ('hero_headline','hero_subheadline','feature_1','feature_2','feature_3','cta_text','testimonial')),
+  generated_value TEXT NOT NULL,
+  is_published BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE(use_case_id, block_key)
+);
+
+-- Visitor sessions (tracks which use case a visitor selected)
+CREATE TABLE visitor_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+  use_case_id UUID REFERENCES use_cases(id) ON DELETE SET NULL,
+  session_token TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Analytics events (views, CTA clicks) tied to a visitor session
+CREATE TABLE events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+  use_case_id UUID REFERENCES use_cases(id) ON DELETE SET NULL,
+  session_token TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('page_view','quiz_shown','quiz_answered','cta_click')),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE INDEX idx_use_cases_business ON use_cases(business_id);
+CREATE INDEX idx_content_blocks_business ON content_blocks(business_id);
+CREATE INDEX idx_content_variants_business ON content_variants(business_id);
+CREATE INDEX idx_visitor_sessions_business ON visitor_sessions(business_id);
+CREATE INDEX idx_events_business ON events(business_id);
+CREATE INDEX idx_events_use_case ON events(use_case_id);
+```
+
+---
+
+## 11. Row Level Security (RLS) / Data Isolation Rules
+
+Since auth is handled by your own Express/JWT layer (not Supabase Auth), enforce tenant isolation **in application code**, not via Supabase RLS policies tied to `auth.uid()`. Rules:
+
+1. Enable RLS on every table below, with a default-deny policy — only the backend's Supabase **service role key** (never exposed to the frontend) can bypass RLS and access data.
+2. Every backend query touching `use_cases`, `content_blocks`, `content_variants`, `visitor_sessions`, or `events` **must** include a `WHERE business_id = :authenticatedBusinessId` clause, where `authenticatedBusinessId` comes from the verified JWT — never from a client-supplied parameter.
+3. Implement a reusable Express middleware `requireAuth` that decodes and verifies the JWT and attaches `req.businessId`. All protected route handlers use `req.businessId`, never a value from `req.body`/`req.query`.
+4. The public routes (`/site/:businessId` page and its supporting `/api/public/:businessId/*` endpoints) are the one exception: they only ever read published `use_cases`/`content_blocks`/`content_variants` and write `visitor_sessions`/`events`, all scoped strictly to the `:businessId` in the URL, and must never expose any other business's data or require the JWT.
+
+```sql
+ALTER TABLE use_cases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE content_blocks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE content_variants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE visitor_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+-- No permissive policies are created; only the service role (used exclusively by the backend) can bypass RLS and read/write.
+```
+
+---
+
+## 12. Backend API Routes
+
+**Auth**
+- `POST /api/auth/signup` — body: business_name, email, password, industry, product_description, brand_tone. Hashes password, creates business, returns JWT.
+- `POST /api/auth/login` — body: email, password. Returns JWT.
+- `GET /api/auth/me` — returns current business profile (requireAuth).
+
+**Use Cases**
+- `GET /api/use-cases` (requireAuth)
+- `POST /api/use-cases` (requireAuth)
+- `PUT /api/use-cases/:id` (requireAuth)
+- `DELETE /api/use-cases/:id` (requireAuth)
+
+**Content Blocks**
+- `GET /api/content-blocks` (requireAuth)
+- `PUT /api/content-blocks/:block_key` — upsert baseline value (requireAuth)
+
+**Content Studio (AI Variant Generation)**
+- `POST /api/content-variants/generate` — generates a tailored variant of every content block for every use case (requireAuth).
+- `GET /api/content-variants` — list all variants, grouped by use case (requireAuth).
+- `PUT /api/content-variants/:id` — edit a generated value or toggle `is_published` (requireAuth).
+
+**Quiz Config**
+- `PUT /api/quiz-config` — update `quiz_question` (requireAuth).
+
+**Public Site / Widget**
+- `GET /api/public/:businessId/site` — returns business's `quiz_question`, ordered `use_cases` (id + label only), and current baseline `content_blocks`. No auth required.
+- `POST /api/public/:businessId/select-use-case` — body: `use_case_id`, `session_token` (client-generated UUID, sent back on subsequent calls). Creates/updates the `visitor_sessions` row, logs a `quiz_answered` event, and returns the published `content_variants` for that use case (falling back to `content_blocks` defaults for any block missing a published variant).
+- `POST /api/public/:businessId/event` — body: `session_token`, `event_type` (`page_view` | `quiz_shown` | `cta_click`), optional `use_case_id`. Logs the event. No auth required.
+
+**Insights**
+- `GET /api/insights/dashboard` — per-use-case counts of `page_view`, `quiz_answered`, and `cta_click` events, plus a computed CTA-click rate per use case (requireAuth).
+
+---
+
+## 13. AI SDK Setup & Server-Side Security
+
+- Install `@anthropic-ai/sdk` in the backend only.
+- Store the key as `ANTHROPIC_API_KEY` in the backend's `.env` — never in any frontend `.env`, never in any client-bundled code, never logged.
+- Create a single shared module `backend/src/lib/anthropic.js` that exports a configured client and a `generateJSON(systemPrompt, userPrompt, schema)` helper that:
+  1. Calls `claude-sonnet-4-6` with the given system + user prompt.
+  2. Instructs the model (in the system prompt) to return **only valid JSON, no markdown fences, no preamble**.
+  3. Parses the response with `JSON.parse`, defensively stripping ```` ```json ```` fences if present, and validates the result against a Zod schema before returning it.
+  4. Throws a clear error (caught by the route handler and returned as a 502) if parsing/validation fails, rather than passing malformed data downstream.
+- The only route that calls the AI is `POST /api/content-variants/generate`, and it is behind `requireAuth`.
+
+---
+
+## 14. AI System Prompt
+
+Use this as the system prompt for `POST /api/content-variants/generate`, with the business's `industry`, `product_description`, and `brand_tone` interpolated in:
+
+```
+You are AdaptCX's AI website copywriter, working on behalf of a business in the "{industry}" industry.
+
+Business's product/service: "{product_description}"
+Business's brand voice: "{brand_tone}"
+
+Your job is to rewrite this business's website copy so it speaks directly to a specific type of visitor (a "use case"), while staying true to the business's actual product and brand voice. You must:
+- Keep every rewritten block's core meaning and length in the same ballpark as the baseline version — you are retargeting the message, not inventing a new product.
+- Make the copy feel like it was written specifically for someone in that use case, referencing their stated pain points naturally, without being gimmicky or repeating the use case name in every sentence.
+- Match the business's brand tone exactly.
+- Return output ONLY in the exact JSON schema specified in the user message. Do not include markdown code fences, explanations, or any text outside the JSON object.
+```
+
+---
+
+## 15. Detailed AI Prompts (with required JSON Schemas)
+
+**A. Generate Tailored Variants** — `POST /api/content-variants/generate`
+
+For each use case, send one user prompt containing: the use case's `label` and `pain_points`, and the full set of current baseline `content_blocks` (`hero_headline`, `hero_subheadline`, `feature_1`, `feature_2`, `feature_3`, `cta_text`, `testimonial`). Ask the model to rewrite all seven blocks for that use case. Repeat per use case (loop server-side), or batch all use cases into one call if the model schema below is extended to an array — the coding agent should implement the **per-use-case loop** version for simplicity and reliability.
+
+Required JSON response schema (per use case):
+```json
+{
+  "hero_headline": "string",
+  "hero_subheadline": "string",
+  "feature_1": "string",
+  "feature_2": "string",
+  "feature_3": "string",
+  "cta_text": "string",
+  "testimonial": "string"
+}
+```
+
+The backend must upsert one `content_variants` row per `block_key` for that `use_case_id` from this response, setting `is_published = true`.
+
+---
+
+## 16. Zod Validation Requirements
+
+Define and use Zod schemas for every request body, including at minimum:
+
+```js
+const signupSchema = z.object({
+  business_name: z.string().min(2),
+  email: z.string().email(),
+  password: z.string().min(8),
+  industry: z.enum(['saas_software','ecommerce_retail','professional_services','education_coaching','other']),
+  product_description: z.string().min(10),
+  brand_tone: z.string().min(5)
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8)
+});
+
+const useCaseSchema = z.object({
+  label: z.string().min(1),
+  pain_points: z.string().min(5),
+  sort_order: z.number().int().optional()
+});
+
+const contentBlockSchema = z.object({
+  default_value: z.string().min(1)
+});
+
+const contentVariantUpdateSchema = z.object({
+  generated_value: z.string().min(1).optional(),
+  is_published: z.boolean().optional()
+});
+
+const quizConfigSchema = z.object({
+  question_text: z.string().min(5)
+});
+
+const selectUseCaseSchema = z.object({
+  use_case_id: z.string().uuid(),
+  session_token: z.string().uuid()
+});
+
+const publicEventSchema = z.object({
+  session_token: z.string().uuid(),
+  event_type: z.enum(['page_view','quiz_shown','cta_click']),
+  use_case_id: z.string().uuid().nullable().optional()
+});
+```
+
+Reject any request that fails validation with a `400` and a structured error body: `{ "errors": [...] }`. Apply these as Express middleware, not inline per-handler checks.
+
+---
+
+## 17. Frontend Components List
+
+- `AuthLayout`, `DashboardLayout` (sidebar nav + top bar)
+- `SignupForm`, `LoginForm`, `OnboardingStep`
+- `KpiCard`, `UseCasePerformanceChart` (Recharts bar chart: views/answers/CTA-clicks per use case)
+- `UseCaseTable`, `UseCaseFormModal`
+- `ContentBlockForm` (one field per `block_key`, saved individually or as a batch)
+- `GenerateVariantsButton`, `VariantsTable` (rows = use cases, columns = block_keys, editable cells), `PublishToggle`
+- `QuizConfigForm`
+- `LivePreviewFrame` (renders the site layout using either baseline or a selected use case's variant) + `UseCaseSwitcher` dropdown
+- `EmbedSnippetBox` (copyable `<script>` tag + instructions)
+- Public site components: `PublicSiteLayout`, `QuizOverlay` (question + option buttons sourced from use cases), `HeroSection`, `FeaturesSection`, `TestimonialSection`, `CtaButton` (fires the `cta_click` event)
+- Shared: `Navbar`, `ProtectedRoute`, `Toast`, `LoadingSpinner`, `Button`, `Input`, `Select`, `Modal`
+
+---
+
+## 18. Security Requirements
+
+- Passwords hashed with bcrypt (salt rounds ≥ 10) — never stored or logged in plaintext.
+- JWTs signed with a strong secret from env, short-to-medium expiry (e.g., 7 days), verified on every protected route via `requireAuth` middleware.
+- `helmet` and `cors` (locked to the deployed frontend origin for authenticated routes; public routes allow cross-origin so the widget can be embedded on third-party sites) configured on the Express app.
+- Rate-limit the public `POST /api/public/:businessId/select-use-case` and `POST /api/public/:businessId/event` routes (e.g., `express-rate-limit`, ~30 requests/minute/IP) since they require no auth.
+- All Supabase access from the backend uses the **service role key**; this key must never be sent to or referenced by any frontend code.
+- Validate that `use_case_id` values passed to any public endpoint actually belong to the `:businessId` in the URL before writing/reading — never trust a client-supplied ID pairing across tenants.
+
+---
+
+## 19. Environment Variables Template
+
+**backend/.env**
+```
+PORT=5000
+NODE_ENV=production
+JWT_SECRET=replace_with_a_long_random_secret
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=replace_with_service_role_key
+ANTHROPIC_API_KEY=replace_with_anthropic_api_key
+FRONTEND_ORIGIN=https://your-frontend-domain.vercel.app
+```
+
+**frontend/.env**
+```
+VITE_API_BASE_URL=https://your-backend-domain.onrender.com/api
+```
+
+---
+
+## 20. Suggested Folder Structure
+
+```
+adaptcx/
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── supabaseClient.js
+│   │   ├── lib/
+│   │   │   └── anthropic.js
+│   │   ├── middleware/
+│   │   │   ├── requireAuth.js
+│   │   │   ├── validate.js
+│   │   │   └── rateLimit.js
+│   │   ├── schemas/
+│   │   │   └── zodSchemas.js
+│   │   ├── routes/
+│   │   │   ├── auth.routes.js
+│   │   │   ├── useCases.routes.js
+│   │   │   ├── contentBlocks.routes.js
+│   │   │   ├── contentVariants.routes.js
+│   │   │   ├── quizConfig.routes.js
+│   │   │   ├── public.routes.js
+│   │   │   └── insights.routes.js
+│   │   ├── controllers/
+│   │   │   └── (one controller file per route group above)
+│   │   ├── prompts/
+│   │   │   └── generateVariants.prompt.js
+│   │   ├── db/
+│   │   │   └── schema.sql
+│   │   ├── app.js
+│   │   └── server.js
+│   ├── .env
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── layouts/
+│   │   ├── pages/
+│   │   ├── context/ (AuthContext.jsx)
+│   │   ├── api/ (axios instance + endpoint functions)
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── .env
+│   └── package.json
+└── README.md
+```
+
+---
+
+## 21. Implementation Phases
+
+1. **Phase 1 — Foundation:** Express app, Supabase project + run schema.sql, JWT auth (signup/login/me), frontend scaffolding with routing/Tailwind, AuthContext + ProtectedRoute.
+2. **Phase 2 — Use Cases & Content Blocks:** CRUD APIs + `/use-cases` and `/content-blocks` pages.
+3. **Phase 3 — AI Variant Generation:** `anthropic.js` lib + generation prompt/schema, `/api/content-variants/generate`, `/content-studio` page with editable variants table.
+4. **Phase 4 — Quiz Config & Live Preview:** `/api/quiz-config`, `/preview` page with use-case switcher rendering baseline vs. variant content.
+5. **Phase 5 — Public Site & Quiz Flow:** `/api/public/:businessId/*` endpoints, `/site/:businessId` page with `QuizOverlay`, content swap, session persistence via localStorage, CTA click event firing.
+6. **Phase 6 — Insights Dashboard:** `/api/insights/dashboard` aggregation query, `/dashboard` page with KPI cards + `UseCasePerformanceChart`.
+7. **Phase 7 — Widget Setup & Hardening & Deploy:** `/widget-setup` page with embed snippet, helmet/cors/rate-limiting, error handling middleware, env var wiring, deploy backend (Render/Railway/Fly.io), deploy frontend (Vercel/Netlify), Supabase production config, final README with setup/execution steps.
+
+---
+
+## 22. Acceptance Criteria
+
+- A new business can sign up, log in, and reach an empty dashboard — no other business's data is ever visible to them.
+- Defining use cases and baseline content blocks works and persists, scoped to the logged-in business.
+- Clicking "Generate tailored content" produces genuinely different AI-written copy per use case (not hardcoded or identical across use cases), visible and editable in `/content-studio`.
+- `/preview`'s use-case switcher instantly shows the correct tailored copy for each use case.
+- The public `/site/:businessId` page shows baseline content, presents the quiz, and — after an answer is picked — re-renders with that use case's tailored content, without a page reload.
+- Returning to `/site/:businessId` in the same browser skips the quiz and shows the previously selected use case's content.
+- `/dashboard` shows real, computed (not fake) per-use-case visit/quiz-answer/CTA-click counts and rates.
+- No API key, JWT secret, or Supabase service role key appears anywhere in frontend code, browser network responses, or git history.
+- The full application builds and runs locally per the README, and is reachable at the deployed public URLs.
+
+---
+
+## 23. Final Instruction to Coding Agent
+
+Build this application now, phase by phase, in the exact order given in Section 21. After each phase, verify the relevant Acceptance Criteria items pass before moving to the next phase. Write complete, production-quality code with no placeholders, no `// TODO: implement this`, and no mocked AI responses — the content-variant generation feature must make a real call to the Claude API as specified in Sections 13-15. When finished, generate a `README.md` at the project root containing: project overview, tech stack, local setup steps (env vars, DB migration, install, run), and deployment steps for the frontend, backend, and database, matching the requirements in this document exactly.
