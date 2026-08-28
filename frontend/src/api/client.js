@@ -1,7 +1,16 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  let base = import.meta.env.VITE_API_BASE_URL || '/api';
+  base = base.replace(/\/+$/, '');
+  if (base.startsWith('http') && !base.endsWith('/api') && !base.includes('/api/')) {
+    base += '/api';
+  }
+  return base;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }
@@ -24,12 +33,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Don't auto-redirect if we are on login/signup or public routes
       const path = window.location.pathname;
       if (!path.startsWith('/login') && !path.startsWith('/signup') && !path.startsWith('/site/')) {
         localStorage.removeItem('adaptcx_auth_token');
         localStorage.removeItem('adaptcx_business');
-        // Optional redirect
       }
     }
     return Promise.reject(error);

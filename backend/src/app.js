@@ -62,14 +62,19 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'AdaptCX Backend API', time: new Date().toISOString() });
 });
 
-// Mount Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/use-cases', useCasesRoutes);
-app.use('/api/content-blocks', contentBlocksRoutes);
-app.use('/api/content-variants', contentVariantsRoutes);
-app.use('/api/quiz-config', quizConfigRoutes);
-app.use('/api/public/:businessId', publicRoutes);
-app.use('/api/insights', insightsRoutes);
+// Mount Routes with /api and direct root alias
+const mountRoutes = (prefix = '') => {
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(`${prefix}/use-cases`, useCasesRoutes);
+  app.use(`${prefix}/content-blocks`, contentBlocksRoutes);
+  app.use(`${prefix}/content-variants`, contentVariantsRoutes);
+  app.use(`${prefix}/quiz-config`, quizConfigRoutes);
+  app.use(`${prefix}/public/:businessId`, publicRoutes);
+  app.use(`${prefix}/insights`, insightsRoutes);
+};
+
+mountRoutes('/api');
+mountRoutes('');
 
 // 404 Handler
 app.use((req, res) => {
